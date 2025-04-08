@@ -6,15 +6,17 @@ public class Unit : MonoBehaviour
 
     private void Update()
     {
-        Vector3 moveDirection = (targetPosition - transform.position).normalized; // Calculate the direction to the target position
-        float moveSpeed = 4f;
-        if (Vector3.Distance(transform.position, targetPosition) > 0.1f) { // Check if the unit is close to the target position
+        float stopDistance = 0.1f; // Distance to stop moving towards the target position
+        if (Vector3.Distance(transform.position, targetPosition) > stopDistance)
+        { // Check if the unit is close to the target position
+            Vector3 moveDirection = (targetPosition - transform.position).normalized; // Calculate the direction to the target position
+            float moveSpeed = 4f;
             transform.position += moveDirection * moveSpeed * Time.deltaTime;
         }
 
-        if (Input.GetKeyDown(KeyCode.T))
+        if (Input.GetMouseButtonDown(0))
         {
-            Move(new Vector3(4, 0, 4));
+            Move(MouseWorld.GetPosition());
         }
     }
 
@@ -24,7 +26,7 @@ public class Unit : MonoBehaviour
     {
         this.targetPosition = targetPosition;        // Move the unit to the target position
         transform.position = Vector3.MoveTowards(transform.position, targetPosition, Time.deltaTime * 5f);
-    
+
     }
 
 }
