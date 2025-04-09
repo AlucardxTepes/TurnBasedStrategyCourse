@@ -5,6 +5,12 @@ public class Unit : MonoBehaviour
     [SerializeField] private Animator unitAnimator;
     private Vector3 targetPosition;
 
+    private void Awake()
+    {
+        // Initialize target position to the unit's current position, this prevents the unit from moving to 0,0 at the start
+        targetPosition = transform.position;
+    }
+
     private void Update()
     {
         float stopDistance = 0.1f; // Distance to stop moving towards the target position
@@ -22,16 +28,11 @@ public class Unit : MonoBehaviour
         {
             unitAnimator.SetBool("isWalking", false);
         }
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            Move(MouseWorld.GetPosition());
-        }
     }
 
 
 
-    private void Move(Vector3 targetPosition)
+    public void Move(Vector3 targetPosition)
     {
         this.targetPosition = targetPosition;        // Move the unit to the target position
         transform.position = Vector3.MoveTowards(transform.position, targetPosition, Time.deltaTime * 5f);
