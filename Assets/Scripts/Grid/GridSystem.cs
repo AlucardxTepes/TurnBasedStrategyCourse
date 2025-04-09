@@ -59,5 +59,4 @@ public class GridSystem
         return gridObjectArray[gridPosition.x, gridPosition.z];
     }
 
-
 }

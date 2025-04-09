@@ -4,11 +4,18 @@ public class Unit : MonoBehaviour
 {
     [SerializeField] private Animator unitAnimator;
     private Vector3 targetPosition;
+    private GridPosition gridPosition;
 
     private void Awake()
     {
         // Initialize target position to the unit's current position, this prevents the unit from moving to 0,0 at the start
         targetPosition = transform.position;
+    }
+
+    private void Start()
+    {
+        gridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
+        LevelGrid.Instance.AddUnitToGridPosition(gridPosition, this);
     }
 
     private void Update()
@@ -28,15 +35,27 @@ public class Unit : MonoBehaviour
         {
             unitAnimator.SetBool("isWalking", false);
         }
+
+        
+        GridPosition newGridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
+        if (newGridPosition != gridPosition)
+        {
+            // unit changed Grid Position
+            LevelGrid.Instance.UnitMovedGridPosition(this, gridPosition, newGridPosition);
+            gridPosition = newGridPosition;
+        }
     }
-
-
 
     public void Move(Vector3 targetPosition)
     {
         this.targetPosition = targetPosition;        // Move the unit to the target position
         transform.position = Vector3.MoveTowards(transform.position, targetPosition, Time.deltaTime * 5f);
 
+    }
+
+    public override string ToString()
+    {
+        return this.name;
     }
 
 }
