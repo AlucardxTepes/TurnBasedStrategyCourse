@@ -37,10 +37,16 @@ public class MoveAction : MonoBehaviour
 
     }
 
-    public void MoveTo(Vector3 newPosition)
+    public void MoveTo(GridPosition newPosition)
     {
-        targetPosition = newPosition;
+        targetPosition = LevelGrid.Instance.GetWorldPosition(newPosition);
         transform.position = Vector3.MoveTowards(transform.position, new Vector3(newPosition.x, 0, newPosition.z), moveSpeed * Time.deltaTime);
+    }
+
+    public bool IsValidActionGridPosition(GridPosition gridPosition)
+    {
+        List<GridPosition> validGridPositionList = GetValidActionGridPositionList();
+        return validGridPositionList.Contains(gridPosition);
     }
 
     public List<GridPosition> GetValidActionGridPositionList()
@@ -52,9 +58,26 @@ public class MoveAction : MonoBehaviour
         {
             for (int z = -maxMoveDistance; z <= maxMoveDistance; z++)
             {
-                GridPosition offsetGridPosition = new GridPosition(x, z);
-                GridPosition testGridPosition = unitGridPosition + offsetGridPosition;
-                Debug.Log(testGridPosition);
+                GridPosition offsetGridPosition = new GridPosition(x, z); // relative position to the unit
+                GridPosition testGridPosition = unitGridPosition + offsetGridPosition; // absolute position in the level grid
+
+                if (!LevelGrid.Instance.IsValidGridPosition(testGridPosition))
+                {
+                    continue;
+                }
+                if (unitGridPosition == testGridPosition)
+                {
+                    // ignore if this unit is already at target position
+                    continue;
+                }
+                if (LevelGrid.Instance.HasAnyUnitOnGridPosition(testGridPosition))
+                {
+                    // ignore if grid object is already occupied by another unit
+                    continue;
+                }
+
+                // this code is reached only after passing validation above
+                validGridPositionList.Add(testGridPosition);
             }
         }
 
